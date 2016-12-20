@@ -10,7 +10,7 @@ from tkinter import messagebox
 
 
 def dir_creator():
-    wdir = "STADS_results"
+    wdir = "SpliDF_results"
     if not os.path.exists(wdir):
         os.makedirs(wdir)
     os.chdir(wdir)
@@ -21,12 +21,12 @@ def ask_file():
     file = askopenfilename(filetypes=ftypes)
     if file == '':
         messagebox.showerror("Ошибка", "Вы не выбрали таблицу")
-    handle = open("file.tmp", 'w')
+    handle = open(".file", 'w')
     handle.write(file)
     handle.close()
 
 def write_column(entry, popup):
-    par_tmp = open('par.tmp', 'w')
+    par_tmp = open('.par', 'w')
     if entry.get() == '':
         messagebox.showerror("Ошибка", "Вы не ввели параметр")
     par_tmp.write(entry.get())  # retrieve text from entry object
@@ -35,7 +35,7 @@ def write_column(entry, popup):
 
 def ask_column():
     popup = Tk()
-    popup.wm_title("STADS")
+    popup.wm_title("SpliDF")
     row = Frame(popup)  # create new row
     lab = Label(row, width=12, text='Параметр')  # add label
     ent = Entry(row, width=12)
@@ -51,7 +51,7 @@ def ask_column():
     return
 
 def write_range(entry, popup):
-    num_tmp = open('num.tmp', 'w')
+    num_tmp = open('.num', 'w')
     num_tmp.write(entry.get())
     num_tmp.close()
     popup.destroy()
@@ -71,11 +71,11 @@ def ask_range():
     popup.focus_set()
     popup.wait_window()
 
-def run_stads():
+def run_SpliDF():
     dec_sign = '.'  # to define it only once
-    tbl_name = open('file.tmp')
+    tbl_name = open('.file')
     tbl_path = tbl_name.read()
-    par_name = open('par.tmp')
+    par_name = open('.par')
     par = par_name.read()
     try:
         tbl = pd.read_csv(tbl_path, delimiter=",", decimal=dec_sign)
@@ -90,7 +90,7 @@ def run_stads():
     numbool = tbl.applymap(np.isreal).all()
     if numbool[par]:
         ask_range()
-        num_name = open("num.tmp")
+        num_name = open(".num")
         num = num_name.read()
         if num == "":
             fr = min(tbl[par])
@@ -111,12 +111,12 @@ def run_stads():
         grouped_dscrb = grouped.describe().round(2)
         grouped_dscrb.to_csv(par + "_stat.csv", delimiter=',', decimal=dec_sign)
 
-    for item in ['file.tmp', 'par.tmp', 'num.tmp']:
+    for item in ['.file', '.par', '.num']:
         try:
             os.remove(item)
         except FileNotFoundError:
             pass
-    messagebox.showinfo("STADS", "Готово")
+    messagebox.showinfo("SpliDF", "Готово")
 
 def quitter():
     ans = askokcancel('Verify exit', 'Надоело работать?')
@@ -125,10 +125,10 @@ def quitter():
 
 def main_win():
     root = Tk()
-    root.wm_title("STADS")
+    root.wm_title("SpliDF")
     tbl_btn = Button(root, text="Выбрать таблицу", width=30, height=3, command=(lambda: ask_file()))
     par_btn = Button(root, text="Ввести параметр", width=30, height=3, command=(lambda: ask_column()))
-    strt_btn = Button(root, text="Старт!", width=30, height=3, command=(lambda: run_stads()))
+    strt_btn = Button(root, text="Старт!", width=30, height=3, command=(lambda: run_SpliDF()))
     quit_btn = Button(root, text="Выход", width=30, height=3, command=(lambda: quitter()))
     # settngs_btn = Button(root, text="Настройки", width=30, height=3, command=root.quit())
     tbl_btn.pack(side=TOP, fill=X)
